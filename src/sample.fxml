@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.collections.FXCollections?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="517.0" prefWidth="752.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller">
+    <children>
+        <Button fx:id="btd_send" layoutX="548.0" layoutY="52.0" mnemonicParsing="false" onAction="#send_news" text="Send News" />
+        <Button fx:id="btd_delold" layoutX="548.0" layoutY="108.0" mnemonicParsing="false" onAction="#delete_old_news" prefHeight="39.0" prefWidth="112.0" text="Delete Old" />
+        <Button fx:id="btd_addnews" layoutX="548.0" layoutY="426.0" mnemonicParsing="false" onAction="#add_news" prefHeight="39.0" prefWidth="112.0" text="Add News" />
+        <ListView fx:id="List_News" layoutX="42.0" layoutY="38.0" prefHeight="358.0" prefWidth="475.0" />
+        <TextField fx:id="txtbox_newnews" layoutX="42.0" layoutY="426.0" prefHeight="39.0" prefWidth="475.0" />
+        <Label fx:id="lable_info" layoutX="42.0" layoutY="476.0" prefHeight="24.0" prefWidth="266.0" text="Label" />
+        <ChoiceBox fx:id="choice_identity" layoutX="43.0" layoutY="23.0" prefWidth="150.0" onAction="#createIdentity">
+
+        <items>
+            <FXCollections fx:factory="observableArrayList">
+                <String fx:value="Choose a Identity" />
+                <String fx:value="Bob" />
+                <String fx:value="Alice" />
+            </FXCollections>
+        </items>
+        <value>
+            <String fx:value="Choose a Identity" />
+        </value>
+        </ChoiceBox>
+        <Button fx:id="btd_refresh" layoutX="549.0" layoutY="207.0" mnemonicParsing="false" onAction="#refresh" prefHeight="39.0" prefWidth="112.0" text="Refresh" />
+    </children>
+</Pane>

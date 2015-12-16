@@ -2,6 +2,9 @@
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import net.sharkfw.kep.SharkProtocolNotSupportedException;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
@@ -28,6 +31,7 @@ public class Alice extends NewsPeerTCP {
     public static void main(String[] args) throws SharkException, IOException {
         // settup alice peer
 //        L.setLogLevel(L.LOGLEVEL_ALL);
+
 
         Alice alice = new Alice("Alice",
                 "http://www.sharksystem.net/alice.html",
