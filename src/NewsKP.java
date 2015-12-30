@@ -525,7 +525,7 @@ public class NewsKP extends KnowledgePort {
             TXSemanticTag supertag = txtag;
 
             //ToDo: Find a way to get all subtags - rekursion
-            do{
+       //     do{
                 Enumeration<TXSemanticTag> subtagenum = supertag.getSubTags();
                 for (; subtagenum.hasMoreElements(); ) {
                     TXSemanticTag stinterest = subtagenum.nextElement();
@@ -534,7 +534,7 @@ public class NewsKP extends KnowledgePort {
                         sendCP(stkb);
                     }
                 }
-            }while(supertag.getSubTags() != null);
+         //   }while(supertag.getSubTags() != null);
         }
     }
 
