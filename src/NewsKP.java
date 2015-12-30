@@ -5,13 +5,14 @@ import net.sharkfw.peer.KnowledgePort;
 import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.system.L;
 import net.sharkfw.system.SharkException;
+import net.sharkfw.system.SharkSecurityException;
 
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Vector;
 
-//ToDo: Interests should be with direction, the tree of interests should be changeable - move a topic under a subtopic
+//ToDo: Interests should be with direction
 
 /**
  * Created by timol on 21.11.2015.
@@ -21,15 +22,6 @@ import java.util.Vector;
 
 public class NewsKP extends KnowledgePort {
 
-    /**
-     * URI of the Topic Chat
-     */
-    //ToDo: Change to Topic as Taxanomie
-    public static final String CHAT_TOPIC_SI = "http://www.sharksystem.net/examples/chat/chatinterest.html";
-    /**
-     * Topic of allnews
-     */
-    public static final String newsTag_ST = "news";   //Markieren der Messages als News - muss noch geändert werden nach URI
     /**
      * remote Peer cause we want to exchange news with all Shark Newsreader Users
      */
@@ -50,12 +42,6 @@ public class NewsKP extends KnowledgePort {
      * Source Semantic Tag of News
      */
     TXSemanticTag newsinterest;
-
-    /**
-     * Fragmentation Parameter for the do Expose Method
-     */
-    FragmentationParameter fp;
-
 
 
     /**
@@ -89,27 +75,23 @@ public class NewsKP extends KnowledgePort {
      * @throws SharkException
      */
     private void initTaxonomy() throws SharkException {
+        //ToDo: Anpassen von Owner und Peer bzw der Fragmentations Parameters
+
         Taxonomy tx = kb.getTopicsAsTaxonomy();
         // Describe the source of all Interests as News
         newsinterest = tx.createTXSemanticTag("News", "www.shark-news.de");
 
-    }
+        Interest newInterest = kb.createInterest(kb.createContextCoordinates(
+                newsinterest,
+                null, // originator is owner of engine
+                null, // peer is owner as well
+                null, // talking to anybody
+                null, // time
+                null,   //place irrelevant
+                SharkCS.DIRECTION_INOUT // Exchange News (in an out)
+        ));
+        kb.addInterest(newInterest);
 
-    /**
-     * Add a new Topic to the Newstopics for example Sport
-     *
-     * @param topic      Topic of the News
-     * @param desciption the Newsstring itself
-     * @throws SharkKBException
-     */
-
-    public void addNewsTopic(String topic, String desciption) throws SharkKBException {
-        Taxonomy tx = kb.getTopicsAsTaxonomy();
-        /**Create new Topic as Taxanomie*/
-        TXSemanticTag newtopic = tx.createTXSemanticTag(topic, desciption);
-        /**Move new topic under the source Topic (News)*/
-        newtopic.move(newsinterest);
-        System.out.println(L.stSet2String(tx));
     }
 
     public Vector getNews() throws SharkKBException {
@@ -136,24 +118,10 @@ public class NewsKP extends KnowledgePort {
         return news;
 
     }
-    public TXSemanticTag getNewsTopic(){
+
+    public TXSemanticTag getNewsTopic() {
 
         return newsinterest;
-    }
-
-    public void sendInteresst(PeerSemanticTag remotePeer){
-     //   this.sendInterest(newsinterest, remotePeer);
-
-    }
-
-    public void setFP(boolean superTags, boolean subTags, int depth) {
-        fp = new FragmentationParameter(superTags, subTags, depth);
-
-    }
-
-
-    public FragmentationParameter getFP(){
-        return fp;
     }
 
     /**
@@ -163,19 +131,20 @@ public class NewsKP extends KnowledgePort {
      * @throws SharkException
      * @throws IOException
      */
-
     public void addNews(String message) throws SharkException, IOException {
+        addNews(message, newsinterest);
+    }
+
+    public void addNews(String message, TXSemanticTag newsTag) throws SharkException, IOException {
         // create context point for new message
 
         // first create coordinates
 
-        SemanticTag newsTag = kb.createSemanticTag("NewsTopic", newsTag_ST); //why deprecated, every time?
         ContextCoordinates cc = kb.createContextCoordinates(
                 newsTag, // its a newsfeed
                 this.owner, // originator is owner of engine
                 this.owner, // peer is owner as well
                 null, // talking to anybody
-                //    InMemoSharkKB.createInMemoTimeSemanticTag(System.currentTimeMillis(), 24 * 60 * 60 * 1000), // time
                 InMemoSharkKB.createInMemoTimeSemanticTag(System.currentTimeMillis(), 15), // time
                 null,   //place irrelevant
                 SharkCS.DIRECTION_INOUT // Exchange News (in an out)
@@ -193,9 +162,6 @@ public class NewsKP extends KnowledgePort {
         // add context point
         k.addContextPoint(cp);
     }
-
-
-//ToDo: Topics of News have to be integrated
 
     /**
      * News got received add the News to the Knowledgebase
@@ -215,10 +181,10 @@ public class NewsKP extends KnowledgePort {
             ContextCoordinates cc = cp.getContextCoordinates();
 
             SemanticTag topic = cc.getTopic();
-            if (!SharkCSAlgebra.identical(topic, this.getnewsTag())) {    //orginal getChatTopic
-                // this knowledge is not a Newsfeed
-                return;
-            }
+       //     if (!SharkCSAlgebra.identical(topic, this.getnewsTag())) {    //orginal getChatTopic
+        //        // this knowledge is not a Newsfeed
+         //       return;
+            //  }
 
 
             // add News feed to Knowledgebase
@@ -264,11 +230,9 @@ public class NewsKP extends KnowledgePort {
         return isInKB;
     }
 
-    // creates an object any time - could be made better...
     private SemanticTag getnewsTag() {
-        SemanticTag newsTag = InMemoSharkKB.createInMemoSemanticTag("NewsTopic", NewsKP.newsTag_ST);
 
-        return newsTag;
+        return newsinterest;
     }
 
     /**
@@ -288,10 +252,8 @@ public class NewsKP extends KnowledgePort {
      * @throws IOException
      */
 
-    public void sendNews(PeerSemanticTag remotePeer) throws SharkException, IOException {
+    public void sendAllNews(PeerSemanticTag remotePeer) throws SharkException, IOException {
 
-        SemanticTag plST = InMemoSharkKB.createInMemoSemanticTag("NewsTopic", newsTag_ST);
-        ContextCoordinates cout = InMemoSharkKB.createInMemoContextCoordinates(plST, null, null, null, null, null, SharkCS.DIRECTION_INOUT);
         Enumeration<ContextPoint> cpEnum = kb.getAllContextPoints();
         if (cpEnum != null) {
             while (cpEnum.hasMoreElements()) {
@@ -303,8 +265,6 @@ public class NewsKP extends KnowledgePort {
         }
 
     }
-
-    //ToDo: a getter Method for the News to be printed out
 
     /**
      * Print all news with System.out.println
@@ -359,10 +319,8 @@ public class NewsKP extends KnowledgePort {
 
     private void addKnowledge(ContextPoint cp) throws SharkException, IOException {
 
-        SemanticTag newsTag = kb.createSemanticTag("NewsTopic", newsTag_ST); //why deprecated, every time?
-
         ContextCoordinates ccnew = kb.createContextCoordinates(
-                newsTag, // its a newsfeed
+                cp.getContextCoordinates().getTopic(), // its a newsfeed
                 cp.getContextCoordinates().getOriginator(), // originator is owner of engine
                 cp.getContextCoordinates().getPeer(), // peer is owner as well
                 null, // talking to anybody
@@ -419,8 +377,6 @@ public class NewsKP extends KnowledgePort {
         }
     }
 
-    //ToDo: Add the exchange of Information
-
     /**
      * does nothing - we handle anything by exchanging knowledge
      * could be integrated when we use categories for Newsfeeds
@@ -431,30 +387,188 @@ public class NewsKP extends KnowledgePort {
     @Override
     protected void doExpose(SharkCS interest, KEPConnection kepConnection) {
 
-  /*    System.out.println("start do expose");
-        STSet fragment;
+        //ToDo: Follow subtags like Sport -> Fussball
+        FragmentationParameter[] fps = new FragmentationParameter[SharkCS.MAXDIMENSIONS];
+        fps[SharkCS.DIM_TOPIC] = new FragmentationParameter( true, // don’t follow super tags
+                                                true, // follow sub tags
+                                                SharkCS.MAXDIMENSIONS); //depth 1
+
+        try {
+            Iterator<SharkCS> interestIter = kb.interests();
+            while (interestIter.hasNext()) {
+                SharkCS storedInterest = interestIter.next();
+
+                Interest mutualInterest = null;
+                try {
+                    mutualInterest = SharkCSAlgebra.contextualize(storedInterest, interest, fps);
+                } catch (SharkKBException e) {
+                    e.printStackTrace();
+                }
+
+                System.out.println("Alice calculates: Bob / Alice:\n " + L.contextSpace2String(mutualInterest));
+                if(mutualInterest!=null){
+                    try {
+                        sendKnowledge(mutualInterest, kepConnection);
+                    } catch (SharkSecurityException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+            }
+        } catch (SharkKBException e) {
+            e.printStackTrace();
+        }
 
 
-        Enumeration<TXSemanticTag> interestEnum = newsinterest.getSubTags();
 
+    }
 
-        while(interestEnum.nextElement()!=null) {
-            TXSemanticTag topic = interestEnum.nextElement();
-            Interest mutualInterest = SharkCSAlgebra.contextualize( topic, interest, getFP());
+    public void sendInteresst(PeerSemanticTag remotePeer) throws SharkKBException, SharkSecurityException, IOException {
 
-            SharkCS storedInterest = interestEnum
-// mutual interest? Interest mutualInterest = SharkCSAlgebra.contextualize( storedInterest, interest, fps);
-            if(mutualInterest != null) { kepConnection.expose(mutualInterest); }
+        Iterator<SharkCS> InterestIterator =  kb.interests();
+        for(;InterestIterator.hasNext();){
+            Interest inter = (Interest) InterestIterator.next();
+            sendInterest(inter, remotePeer);
+        }
 
+    }
 
-            /*
-            Iterator<SharkCS> interestIter = storedInterests.getInterests();
-while(interestIter.hasNext()) { SharkCS storedInterest = interestIter.next();
-// mutual interest? Interest mutualInterest = SharkCSAlgebra.contextualize( storedInterest, interest, fps);
-if(mutualInterest != null) { kepConnection.expose(mutualInterest); }
-}
+    /**
+     * Add a new Topic to the Newstopics for example Sport
+     *
+     * @param topic      Topic of the News
+     * @param desciption the Newsstring itself
+     * @throws SharkKBException
+     */
+    public void addNewsTopic(String topic, String desciption) throws SharkKBException {
+        addNewsTopic(topic, desciption, newsinterest);
+    }
+
+    public void addNewsTopic(String topic, String description, TXSemanticTag supertopic) throws SharkKBException {
+        Taxonomy tx = kb.getTopicsAsTaxonomy();
+
+        /**Create new Topic as Taxanomie*/
+        TXSemanticTag newtopic = tx.createTXSemanticTag(topic, description);
+
+        /**Move new topic under the source Topic (News)*/
+        newtopic.move(supertopic);
+
+        Interest newInterest = kb.createInterest(kb.createContextCoordinates(
+                newtopic,
+                null, // originator is owner of engine
+                null, // peer is owner as well
+                null, // talking to anybody
+                //    InMemoSharkKB.createInMemoTimeSemanticTag(System.currentTimeMillis(), 24 * 60 * 60 * 1000), // time
+                null, // time
+                null,   //place irrelevant
+                SharkCS.DIRECTION_INOUT // Exchange News (in an out)
+        ));
+        kb.addInterest(newInterest);
+        System.out.println(L.stSet2String(tx));
+
+    }
+
+    public TXSemanticTag getTopicasSemanticTag (String topic) throws SharkKBException {
+        TXSemanticTag supertopic = null;
+        Taxonomy txs = kb.getTopicsAsTaxonomy();
+        Enumeration<SemanticTag> enumRoot = txs.tags();
+        if(enumRoot != null){
+            do{
+                SemanticTag tag = enumRoot.nextElement();
+                if(topic.equals(tag.getName())){
+                    supertopic = (TXSemanticTag) tag;
+                }
+            }while ( enumRoot.hasMoreElements());
 
         }
+
+        return supertopic;
+    }
+
+    private ContextPoint getCPfromTopic(TXSemanticTag topic) throws SharkKBException {
+        Enumeration<ContextPoint> cpEnum = kb.getAllContextPoints();
+        for (; cpEnum.hasMoreElements(); ) {
+            ContextPoint stkb = cpEnum.nextElement();
+            if (stkb.getContextCoordinates().getTopic().getName().equals(topic.getName())) {
+                return stkb;
+            }
+        }
+        return null;
+    }
+
+    private void sendKnowledge(Interest mutualInterest, KEPConnection destination) throws SharkKBException, SharkSecurityException, IOException {
+        Taxonomy tx = kb.getTopicsAsTaxonomy();
+        Enumeration<SemanticTag> txenum = tx.tags();
+        Enumeration<SemanticTag> interestenum = mutualInterest.getTopics().tags();
+
+        TXSemanticTag txtag = null;
+        outerloop:
+        for(;interestenum.hasMoreElements();){
+            String interesttopic = interestenum.nextElement().getName();
+
+            for(;txenum.hasMoreElements();){
+                txtag = (TXSemanticTag) txenum.nextElement();
+                String txtopic = txtag.getName();
+                if(interesttopic.equals(txtopic)){
+                  break outerloop;
+
+                }
+            }
+        }
+        if(txtag != null) {
+            ContextPoint stkb = getCPfromTopic(txtag);
+            if (stkb != null) {
+                sendCP(stkb);
+            }
+            TXSemanticTag supertag = txtag;
+
+            //ToDo: Find a way to get all subtags - rekursion
+            do{
+                Enumeration<TXSemanticTag> subtagenum = supertag.getSubTags();
+                for (; subtagenum.hasMoreElements(); ) {
+                    TXSemanticTag stinterest = subtagenum.nextElement();
+                    stkb = getCPfromTopic(stinterest);
+                    if (stkb != null) {
+                        sendCP(stkb);
+                    }
+                }
+            }while(supertag.getSubTags() != null);
+        }
+    }
+
+/*
+
+        if (cpEnum != null) {
+            do {
+                ContextPoint cpout = cpEnum.nextElement();
+                STSet context = mutualInterest.getTopics().contextualize(cpout.getContextCoordinates().getTopics());
+
+                Enumeration<SemanticTag> enumtag = mutualInterest.getTopics().tags();
+                if(!context.isEmpty()){
+                    Knowledge k = InMemoSharkKB.createInMemoKnowledge();
+                    k.addContextPoint(cpout);
+                    this.sendKnowledge(k, InMemoSharkKB.createInMemoPeerSemanticTag("Bob",
+                            "http://www.sharksystem.net/bob.html",
+                            "tcp://localhost:7071"));
+                }
+
+            } while (cpEnum.hasMoreElements());
+        }
 */
+
+    private void sendCP(ContextPoint cp) throws SharkSecurityException, IOException, SharkKBException {
+        Knowledge k = InMemoSharkKB.createInMemoKnowledge();
+        k.addContextPoint(cp);
+        this.sendKnowledge(k, InMemoSharkKB.createInMemoPeerSemanticTag("Bob",
+                "http://www.sharksystem.net/bob.html",
+                "tcp://localhost:7071"));
+    }
+
+    private void getSubTags(TXSemanticTag root){
+
     }
 }
+
+

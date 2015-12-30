@@ -40,7 +40,7 @@ public class Controller {
 
     public void send_news(ActionEvent actionEvent) {
         try {
-            me.newsKP.sendNews(other);
+            me.newsKP.sendAllNews(other);
         } catch (SharkException e) {
             e.printStackTrace();
         } catch (IOException e) {

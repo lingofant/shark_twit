@@ -2,11 +2,12 @@
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
+
 import net.sharkfw.kep.SharkProtocolNotSupportedException;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
+import net.sharkfw.knowledgeBase.SharkCS;
+import net.sharkfw.knowledgeBase.SharkCSAlgebra;
+import net.sharkfw.knowledgeBase.TXSemanticTag;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.system.L;
 import net.sharkfw.system.SharkException;
@@ -40,24 +41,33 @@ public class Alice extends NewsPeerTCP {
         );
         alice.newsKP.addNewsTopic("Nachrichten", "www.tagesthemen.de");
         alice.newsKP.addNewsTopic("Sport", "www.sport.de");
+        alice.newsKP.addNewsTopic("Fussball", "www.bundlesliga.de", alice.newsKP.getTopicasSemanticTag("Sport"));
+        alice.newsKP.addNews("Bayern nervt", alice.newsKP.getTopicasSemanticTag("Fussball"));
+        alice.newsKP.addNews("Sth about IS", alice.newsKP.getTopicasSemanticTag("Nachrichten"));
+        alice.newsKP.addNews("Sport sucks", alice.newsKP.getTopicasSemanticTag("Sport"));
 
         System.out.println("Alice is running - start Bob now");
 
-        try {
+        alice.newsKP.printNews();
+
+/*        try {
             TimeUnit.SECONDS.sleep(30);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
+*/
+ //       alice.newsKP.addNews("This is a new Newsfeed from Alice");
 
-        alice.newsKP.addNews("This is a new Newsfeed from Alice");
         PeerSemanticTag bob = InMemoSharkKB.createInMemoPeerSemanticTag("Bob",
                 "http://www.sharksystem.net/bob.html",
                 "tcp://localhost:7071");
-        alice.newsKP.deleteold();
 
 
-        alice.newsKP.sendNews(bob);
+
+
+
+
 
 
     }

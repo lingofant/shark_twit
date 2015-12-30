@@ -31,22 +31,26 @@ public class Bob extends NewsPeerTCP {
         );
         System.out.println("Bob started - is going to send news to Alice");
 
-        bob.newsKP.addNews("New Newsfeed available");
-        bob.newsKP.addNews("Now i have one more news");
-        bob.newsKP.printNews();
 
         PeerSemanticTag alice = InMemoSharkKB.createInMemoPeerSemanticTag("Alice",
                 "http://www.sharksystem.net/alice.html",
                 "tcp://localhost:7070");
 
-        bob.newsKP.sendNews(alice);
-        try {
+ /*       try {
             TimeUnit.SECONDS.sleep(20);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
         bob.newsKP.deleteold();
+*/
+  //      bob.newsKP.addNewsTopic("Sport", "www.sport.de");
+
+
+        bob.newsKP.sendInteresst(alice);
+
+        System.out.println("Finally my news: ");
+        bob.newsKP.printNews();
 
 
 
