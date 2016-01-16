@@ -1,31 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.collections.*?>
 <?import javafx.scene.control.*?>
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.collections.FXCollections?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="517.0" prefWidth="752.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="522.0" prefWidth="1222.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller">
     <children>
-        <Button fx:id="btd_send" layoutX="548.0" layoutY="52.0" mnemonicParsing="false" onAction="#send_news" text="Send News" />
-        <Button fx:id="btd_delold" layoutX="548.0" layoutY="108.0" mnemonicParsing="false" onAction="#delete_old_news" prefHeight="39.0" prefWidth="112.0" text="Delete Old" />
-        <Button fx:id="btd_addnews" layoutX="548.0" layoutY="426.0" mnemonicParsing="false" onAction="#add_news" prefHeight="39.0" prefWidth="112.0" text="Add News" />
-        <ListView fx:id="List_News" layoutX="42.0" layoutY="38.0" prefHeight="358.0" prefWidth="475.0" />
-        <TextField fx:id="txtbox_newnews" layoutX="42.0" layoutY="426.0" prefHeight="39.0" prefWidth="475.0" />
-        <Label fx:id="lable_info" layoutX="42.0" layoutY="476.0" prefHeight="24.0" prefWidth="266.0" text="Label" />
-        <ChoiceBox fx:id="choice_identity" layoutX="43.0" layoutY="23.0" prefWidth="150.0" onAction="#createIdentity">
-
-        <items>
-            <FXCollections fx:factory="observableArrayList">
+        <Button fx:id="btd_send" layoutX="43.0" layoutY="375.0" mnemonicParsing="false" onAction="#send_interest" text="Send Interest" />
+        <Button fx:id="btd_delold" layoutX="197.0" layoutY="375.0" mnemonicParsing="false" onAction="#delete_old_news" prefHeight="39.0" prefWidth="112.0" text="Delete Old" />
+        <Button fx:id="btd_addnews" layoutX="656.0" layoutY="382.0" mnemonicParsing="false" onAction="#add_news" prefHeight="39.0" prefWidth="112.0" text="Add News" />
+        <ListView fx:id="List_News" layoutX="43.0" layoutY="77.0" prefHeight="269.0" prefWidth="475.0" />
+        <TextField fx:id="txtbox_newnews" layoutX="701.0" layoutY="77.0" prefHeight="39.0" prefWidth="475.0" />
+        <Label fx:id="lable_info" layoutX="43.0" layoutY="481.0" prefHeight="24.0" prefWidth="266.0" text="Label" />
+        <ChoiceBox fx:id="choice_identity" layoutX="43.0" layoutY="23.0" onAction="#createIdentity" prefWidth="150.0">
+            <items>
+                <FXCollections fx:factory="observableArrayList">
+                    <String fx:value="Choose a Identity" />
+                    <String fx:value="Bob" />
+                    <String fx:value="Alice" />
+                </FXCollections>
+            </items>
+            <value>
                 <String fx:value="Choose a Identity" />
-                <String fx:value="Bob" />
-                <String fx:value="Alice" />
-            </FXCollections>
-        </items>
-        <value>
-            <String fx:value="Choose a Identity" />
-        </value>
+            </value>
         </ChoiceBox>
-        <Button fx:id="btd_refresh" layoutX="549.0" layoutY="207.0" mnemonicParsing="false" onAction="#refresh" prefHeight="39.0" prefWidth="112.0" text="Refresh" />
+        <Button fx:id="btd_refresh" layoutX="342.0" layoutY="375.0" mnemonicParsing="false" onAction="#refresh" prefHeight="39.0" prefWidth="112.0" text="Refresh" />
+        <TextField fx:id="txtbox_topic" layoutX="701.0" layoutY="130.0" prefHeight="39.0" prefWidth="475.0" />
+        <TextField fx:id="txtbox_topicuri" layoutX="701.0" layoutY="183.0" prefHeight="39.0" prefWidth="475.0" />
+        <TextField fx:id="txtbox_topicdir" layoutX="699.0" layoutY="291.0" prefHeight="39.0" prefWidth="217.0" />
+        <Button fx:id="btd_addtopic" layoutX="792.0" layoutY="382.0" mnemonicParsing="false" onAction="#add_topic" prefHeight="39.0" prefWidth="112.0" text="Add Topic" />
+        <TextField fx:id="txtbox_topicsuper" layoutX="701.0" layoutY="237.0" prefHeight="39.0" prefWidth="475.0" />
+        <Label layoutX="539.0" layoutY="83.0" text="NewsMessage:" />
+        <Label layoutX="539.0" layoutY="136.0" text="Topic" />
+        <Label layoutX="546.0" layoutY="189.0" text="TopicUri" />
+        <Label layoutX="553.0" layoutY="297.0" text="TopicDirection" />
+        <Label layoutX="530.0" layoutY="243.0" text="Name of SuperTopic" />
+        <Label layoutX="626.0" layoutY="348.0" text="IN = 0;   OUT = 1;  INOUT = 2;  NOTHING = 3;" />
+        <Button fx:id="btd_sendallInterests" layoutX="43.0" layoutY="421.0" mnemonicParsing="false" onAction="#send_allinterest" text="Send All Interests" />
     </children>
 </Pane>

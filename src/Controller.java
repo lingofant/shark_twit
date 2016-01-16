@@ -6,6 +6,7 @@ import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.system.SharkException;
+import net.sharkfw.system.SharkSecurityException;
 
 import java.io.IOException;
 import java.util.Vector;
@@ -31,22 +32,24 @@ public class Controller {
     public TextField txtbox_newnews;
 
     @FXML
+    public TextField txtbox_topicdir;
+
+    @FXML
+    public TextField txtbox_topicuri;
+
+    @FXML
+    public TextField txtbox_topic;
+
+    @FXML
+    public TextField txtbox_topicsuper;
+
+    @FXML
     public ChoiceBox choice_identity;
 
 
     PeerSemanticTag other;
     NewsPeerTCP me;
 
-
-    public void send_news(ActionEvent actionEvent) {
-        try {
-            me.newsKP.sendAllNews(other);
-        } catch (SharkException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
     public void delete_old_news(ActionEvent actionEvent){
             try {
@@ -75,7 +78,7 @@ public class Controller {
 
     public void add_news(ActionEvent actionEvent) {
         try {
-            me.newsKP.addNews(txtbox_newnews.getText());
+            me.newsKP.addNews(txtbox_newnews.getText(), me.newsKP.getTopicasSemanticTag(txtbox_topic.getText()));
         } catch (SharkException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -113,5 +116,47 @@ public class Controller {
 
         }
 
+    }
+
+    public void add_topic(ActionEvent actionEvent) throws SharkKBException {
+
+        if(txtbox_topicdir.getText().trim().isEmpty()){
+            if(txtbox_topicsuper.getText().trim().isEmpty()){
+                me.newsKP.addNewsTopic(txtbox_topic.getText(), txtbox_topicuri.getText());
+            }
+            else{
+
+            }
+        }
+        if(txtbox_topicsuper.getText().trim().isEmpty()){
+
+        }
+        else{
+            me.newsKP.addNewsTopic(txtbox_topic.getText(), txtbox_topicuri.getText(), me.newsKP.getTopicasSemanticTag(txtbox_topicsuper.getText()), Integer.parseInt(txtbox_topicdir.getText()));
+        }
+    }
+
+    public void send_interest(ActionEvent actionEvent) {
+        try {
+            me.newsKP.sendInteresst(other);
+        } catch (SharkKBException e) {
+            e.printStackTrace();
+        } catch (SharkSecurityException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void send_allinterest(ActionEvent actionEvent)  {
+        try {
+            me.newsKP.sendAllIntersesst(other);
+        } catch (SharkKBException e) {
+            e.printStackTrace();
+        } catch (SharkSecurityException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

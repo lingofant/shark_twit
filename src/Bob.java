@@ -46,9 +46,20 @@ public class Bob extends NewsPeerTCP {
 */
   //      bob.newsKP.addNewsTopic("Sport", "www.sport.de");
 
+        bob.newsKP.addNewsTopic("Nachrichten", "www.tagesthemen.de");
+
 
         bob.newsKP.sendInteresst(alice);
 
+        System.out.println("Finally my news: ");
+        bob.newsKP.printNews();
+
+        try {
+            TimeUnit.SECONDS.sleep(10);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        bob.newsKP.sendAllIntersesst(alice);
         System.out.println("Finally my news: ");
         bob.newsKP.printNews();
 
