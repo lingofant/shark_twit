@@ -19,6 +19,10 @@ import java.util.Vector;
  * Created by timol on 21.11.2015.
  * KnowledgePort of the Shark Newsreader
  */
+/**
+ * Created by timol on 21.11.2015.
+ * KnowledgePort of the Shark Newsreader
+ */
 
 
 public class NewsKP extends KnowledgePort {
@@ -43,6 +47,12 @@ public class NewsKP extends KnowledgePort {
      * Source Semantic Tag of News
      */
     TXSemanticTag newsinterest;
+
+    /**
+     * Duration Time for the News - Std is one day
+     */
+    int durationtime = 86400000;
+
 
 
     /**
@@ -150,7 +160,7 @@ public class NewsKP extends KnowledgePort {
                 this.owner, // originator is owner of engine
                 this.owner, // peer is owner as well
                 null, // talking to anybody
-                InMemoSharkKB.createInMemoTimeSemanticTag(System.currentTimeMillis(), 15), // time
+                InMemoSharkKB.createInMemoTimeSemanticTag(System.currentTimeMillis(), durationtime), // time
                 null,   //place irrelevant
                 //SharkCS.DIRECTION_INOUT
                 inter.getDirection() // Exchange News (in an out)
@@ -182,16 +192,6 @@ public class NewsKP extends KnowledgePort {
             ContextPoint cp = cpEnum.nextElement();
 
             ContextCoordinates cc = cp.getContextCoordinates();
-
-            SemanticTag topic = cc.getTopic();
-       //     if (!SharkCSAlgebra.identical(topic, this.getnewsTag())) {    //orginal getChatTopic
-        //        // this knowledge is not a Newsfeed
-         //       return;
-            //  }
-
-
-            // add News feed to Knowledgebase
-            // all metadata set - lets create a context point
 
             try {
                 if (!isInKB(cc)) {
@@ -426,17 +426,36 @@ public class NewsKP extends KnowledgePort {
      */
 
     public void sendInteresst(PeerSemanticTag remotePeer) throws SharkKBException, SharkSecurityException, IOException {
-        Iterator<SharkCS> InterestIterator = kb.interests();
-        for (; InterestIterator.hasNext(); ) {
-            Interest inter = (Interest) InterestIterator.next();
-            if(!inter.getTopics().tags().nextElement().getName().equals("News")) {
-                if (inter.getDirection() == 2 || inter.getDirection() == 0) {
-                    inter.setOriginator(owner);
-                    sendInterest(inter, remotePeer);
-                }
+        sendSubInteresst(newsinterest, remotePeer);
+    }
+
+
+    /**
+     * sends the subtopics to the remotepeer (only the ends of the tree of interests)
+     * that`s cause the subtopics specifies the supertopic
+     *
+     * @param supertag
+     * @param remotePeer
+     * @throws SharkKBException
+     * @throws SharkSecurityException
+     * @throws IOException
+     */
+
+    private void sendSubInteresst(TXSemanticTag supertag, PeerSemanticTag remotePeer) throws SharkKBException, SharkSecurityException, IOException {
+        Enumeration<TXSemanticTag> subtagenum =supertag.getSubTags();
+        if(subtagenum == null){
+            Interest sendInter = getTopicAsInterst(supertag.getName());
+            if (sendInter.getDirection() == 2 || sendInter.getDirection() == 0) {
+                sendInter.setOriginator(owner);
+                sendInterest(sendInter, remotePeer);
             }
+            return;
+        }
+        while(subtagenum.hasMoreElements()){
+            sendSubInteresst(subtagenum.nextElement(), remotePeer);
         }
     }
+
 
     /**
      * Sends the Root Interest "News" to the Remotepeer to get all News
@@ -629,4 +648,9 @@ public class NewsKP extends KnowledgePort {
         k.addContextPoint(cp);
         sendKnowledge(k, destination);
     }
+
+    public void setDurationtime(int durationtime){
+        this.durationtime = durationtime;
+    }
+
 }
